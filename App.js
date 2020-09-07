@@ -1,27 +1,64 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 
-import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  FlatList,
+} from 'react-native';
+
+import Config from 'react-native-config';
+
+const renderItem = ({item}) => {
+  return (
+    <TouchableOpacity style={styles.card}>
+      <Image
+        source={{
+          uri: item.webformatURL,
+        }}
+        style={styles.cardImage}
+      />
+      <Text style={styles.cardTitle}>{item.tags}</Text>
+    </TouchableOpacity>
+  );
+};
 
 const App = () => {
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const url = `https://pixabay.com/api/?key=${Config.API_KEY}&q=yellow+nature&image_type=photo`;
+      const response = await fetch(url);
+      const result = await response.json();
+      setItems(result.hits);
+    };
+    fetchData();
+  }, []);
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.card}>
-        <Image
-          source={{
-            uri:
-              'https://cdn.pixabay.com/photo/2020/09/01/06/10/lake-5534341_1280.jpg',
-          }}
-          style={styles.cardImage}
-        />
-        <Text style={styles.cardTitle}>Card List</Text>
-      </TouchableOpacity>
+      <Text style={styles.title}>CardListView</Text>
+      <FlatList
+        data={items}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={renderItem}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 50,
+    marginTop: 40,
+  },
+  title: {
+    fontSize: 23,
+    fontWeight: '700',
+    marginBottom: 10,
+    textAlign: 'center',
   },
 
   card: {
@@ -41,10 +78,13 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 200,
     resizeMode: 'cover',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
   cardTitle: {
     fontSize: 16,
     padding: 10,
+    textTransform: 'uppercase',
   },
 });
 

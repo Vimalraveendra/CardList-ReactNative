@@ -6,6 +6,9 @@
 .vscode/
 .vscode/settings
 
+###environmentalfiles###
+.env
+
 # Xcode
 #
 build/
